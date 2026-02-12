@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="38" fill="#0a5ca8"/>
+  <rect x="16" y="128" width="160" height="8" rx="4" fill="#d0dae3"/>
+  <circle cx="16" cy="132" r="6" fill="#7b8fa1"/>
+  <circle cx="43" cy="132" r="6" fill="#7b8fa1"/>
+  <circle cx="70" cy="132" r="6" fill="#7b8fa1"/>
+  <circle cx="96" cy="132" r="6" fill="#7b8fa1"/>
+  <circle cx="123" cy="132" r="6" fill="#7b8fa1"/>
+  <circle cx="150" cy="132" r="6" fill="#7b8fa1"/>
+  <circle cx="176" cy="132" r="6" fill="#7b8fa1"/>
+  <path d="M36 84c0-8 7-14 15-14h55c7 0 14 3 19 8l11 11c3 3 3 9-1 12l-14 9H36V84z" fill="#ffffff"/>
+  <circle cx="62" cy="118" r="6" fill="#073b69"/>
+  <circle cx="98" cy="118" r="6" fill="#073b69"/>
+  <text x="96" y="46" text-anchor="middle" font-size="26" font-family="sans-serif" fill="#ffffff">的当て</text>
+</svg>
