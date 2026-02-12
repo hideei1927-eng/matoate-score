@@ -96,6 +96,10 @@ select {
   margin-top: 10px;
 }
 
+.hidden {
+  display: none !important;
+}
+
 button {
   border: 0;
   border-radius: 12px;
@@ -123,7 +127,7 @@ button.danger:active {
   background: var(--danger-dark);
 }
 
-.status-card .big-text {
+.big-text {
   font-size: 24px;
   font-weight: 800;
   margin: 0 0 6px;
@@ -143,8 +147,8 @@ button.danger:active {
 }
 
 .score-btn {
-  min-height: 72px;
-  font-size: 32px;
+  min-height: 58px;
+  font-size: 26px;
   border-radius: 14px;
 }
 
@@ -261,7 +265,7 @@ button.danger:active {
   }
 
   .score-btn {
-    min-height: 68px;
-    font-size: 30px;
+    min-height: 56px;
+    font-size: 24px;
   }
 }

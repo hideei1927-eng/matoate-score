@@ -20,16 +20,27 @@
         <p class="subtitle">親子の2人対戦向け 得点管理アプリ</p>
       </header>
 
-      <section class="card">
+      <section id="settingsSection" class="card">
         <h2>試合設定</h2>
         <div class="form-grid">
           <label>
-            プレイヤー1名
+            プレイヤー数
+            <select id="playerCount">
+              <option value="2">2人</option>
+              <option value="3">3人</option>
+            </select>
+          </label>
+          <label>
+            プレイヤー１
             <input id="player1Name" type="text" maxlength="20" />
           </label>
           <label>
-            プレイヤー2名
+            プレイヤー２
             <input id="player2Name" type="text" maxlength="20" />
+          </label>
+          <label id="player3Wrap">
+            プレイヤー３
+            <input id="player3Name" type="text" maxlength="20" />
           </label>
           <label>
             1セット投球数
@@ -46,43 +57,49 @@
           </label>
         </div>
         <div class="actions">
-          <button id="applySettingsButton" class="secondary">設定を保存して新規試合</button>
-          <button id="resetMatchButton" class="danger">試合をリセット</button>
+          <button id="startMatchButton">試合開始</button>
+          <button id="applySettingsButton" class="secondary">設定を保存</button>
         </div>
       </section>
 
-      <section class="card status-card">
+      <section id="statusSection" class="card status-card">
         <h2>現在状況</h2>
         <p id="turnInfo" class="big-text"></p>
         <p id="matchInfo"></p>
         <p id="winnerInfo" class="winner"></p>
         <div class="actions">
           <button id="undoButton" class="secondary">1球取り消し（Undo）</button>
+          <button id="resetMatchButton" class="danger">試合をリセット</button>
+          <button id="showSettingsButton" class="secondary">設定を表示</button>
         </div>
       </section>
 
-      <section class="card">
+      <section id="inputSection" class="card">
         <h2>得点入力（0〜10）</h2>
+        <p id="playTurnInfo" class="big-text"></p>
         <div id="scoreButtons" class="score-grid" aria-label="得点入力ボタン"></div>
+        <div class="actions">
+          <button id="undoInlineButton" class="secondary">1球取り消し（Undo）</button>
+        </div>
       </section>
 
-      <section class="card">
+      <section id="scoreboardSection" class="card">
         <h2>セット集計</h2>
         <div id="scoreboard" class="scoreboard"></div>
       </section>
 
-      <section class="card">
+      <section id="trainSection" class="card">
         <h2>新幹線進行（得点で前進）</h2>
         <div id="trainBoard"></div>
       </section>
 
-      <section class="card">
+      <section id="savedSection" class="card">
         <h2>保存データ</h2>
         <p id="bestScoreInfo"></p>
         <div id="lastMatchInfo"></div>
       </section>
 
-      <section class="card">
+      <section id="selfCheckSection" class="card">
         <h2>自己点検（自動）</h2>
         <ul id="selfCheckList" class="check-list"></ul>
       </section>
