@@ -34,11 +34,11 @@
 
 ## ローカル起動
 ```bash
-cd "/Users/hidee/Library/CloudStorage/OneDrive-個人用/アプリ/自作アプリ"
-python3 -m http.server 8000 --bind 127.0.0.1
+cd <project-directory>
+python3 -m http.server 8000
 ```
 
-- ブラウザ: <http://127.0.0.1:8000/index.html>
+- ブラウザ: <http://localhost:8000/index.html>
 
 ## GitHub Pages 公開
 1. リポジトリへ push
