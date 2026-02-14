@@ -90,18 +90,25 @@
           </div>
           <button id="hudUndoButton" class="secondary small-btn">Undo</button>
         </div>
+        <div class="hud-chips">
+          <span id="hudSetChip" class="hud-chip"></span>
+          <span id="hudRemainChip" class="hud-chip"></span>
+          <span id="hudModeChip" class="hud-chip"></span>
+        </div>
         <div class="hud-row">
           <span>現在合計: <strong id="hudTotal">0</strong>点</span>
         </div>
         <div class="hud-row">
           <span id="hudStationInfo"></span>
         </div>
+        <p id="hudCoach" class="hud-coach"></p>
       </section>
 
       <section id="inputSection" class="card hidden">
         <h2>得点入力</h2>
         <p id="playTurnInfo" class="big-text"></p>
         <div id="scoreButtons" class="score-grid" aria-label="得点入力ボタン"></div>
+        <div id="recentThrows" class="recent-throws"></div>
       </section>
 
       <section id="trainSection" class="card hidden">

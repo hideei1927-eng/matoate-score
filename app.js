@@ -73,8 +73,13 @@ const ui = {
   hudThrow: document.getElementById("hudThrow"),
   hudTotal: document.getElementById("hudTotal"),
   hudStationInfo: document.getElementById("hudStationInfo"),
+  hudSetChip: document.getElementById("hudSetChip"),
+  hudRemainChip: document.getElementById("hudRemainChip"),
+  hudModeChip: document.getElementById("hudModeChip"),
+  hudCoach: document.getElementById("hudCoach"),
   hudUndoButton: document.getElementById("hudUndoButton"),
   scoreButtons: document.getElementById("scoreButtons"),
+  recentThrows: document.getElementById("recentThrows"),
   trainBoard: document.getElementById("trainBoard"),
   scoreboard: document.getElementById("scoreboard"),
   badgeList: document.getElementById("badgeList"),
@@ -97,9 +102,11 @@ let matchStarted = false;
 let undoStack = [];
 
 const effectState = {
-  lock: false,
+  reactionBusy: false,
+  confettiBusy: false,
   reactionTimer: null,
   toastTimer: null,
+  confettiTimer: null,
 };
 
 init();
@@ -469,6 +476,7 @@ function render() {
 
   renderPlayText();
   renderHud();
+  renderRecentThrows();
   renderTrainBoard();
   renderScoreboard();
   renderStatus();
@@ -482,35 +490,72 @@ function renderPlayText() {
     ui.playTurnInfo.textContent = "";
     return;
   }
-  const names = appState.settings.playerNames;
-  if (appState.suddenDeath.active) {
-    const player = appState.suddenDeath.players[appState.suddenDeath.currentIndex];
-    const throwNo = appState.suddenDeath.scores[player].length + 1;
-    ui.playTurnInfo.textContent = `サドンデス: ${names[player]} の ${throwNo}球目`;
-    return;
-  }
-  const p = appState.currentPlayer;
-  const throwNo = appState.scores[p][appState.currentSet].length + 1;
-  ui.playTurnInfo.textContent = `${names[p]} の ${throwNo}球目`;
+  const turn = getCurrentTurnContext();
+  ui.playTurnInfo.textContent = turn.isSuddenDeath
+    ? `サドンデス: ${turn.name} の ${turn.throwNo}球目`
+    : `${turn.name} の ${turn.throwNo}球目`;
 }
 
 function renderHud() {
   if (!matchStarted || !appState || appState.finished) return;
-
-  const names = appState.settings.playerNames;
-  let p = appState.currentPlayer;
-  let throwNo = appState.scores[p][appState.currentSet].length + 1;
-  if (appState.suddenDeath.active) {
-    p = appState.suddenDeath.players[appState.suddenDeath.currentIndex];
-    throwNo = appState.suddenDeath.scores[p].length + 1;
-  }
-
+  const turn = getCurrentTurnContext();
   const totals = getOverallTotals(appState);
-  const progress = getTrainProgress(totals[p]);
-  ui.hudCurrentPlayer.textContent = names[p];
-  ui.hudThrow.textContent = `${throwNo}球目`;
-  ui.hudTotal.textContent = String(totals[p]);
+  const progress = getTrainProgress(totals[turn.playerIndex]);
+  const remaining = appState.settings.throwsPerSet - (turn.throwNo - 1);
+  ui.hudCurrentPlayer.textContent = turn.name;
+  ui.hudThrow.textContent = `${turn.throwNo}球目`;
+  ui.hudSetChip.textContent = `セット ${appState.currentSet + 1}/${appState.settings.setCount}`;
+  ui.hudRemainChip.textContent = turn.isSuddenDeath ? "サドンデス" : `残り ${Math.max(0, remaining)}球`;
+  ui.hudModeChip.textContent = settings.kidsMode ? "こどもモード" : "ノーマル";
+  ui.hudCoach.textContent = coachText(progress.toNext, turn.isSuddenDeath);
+  ui.hudTotal.textContent = String(totals[turn.playerIndex]);
   ui.hudStationInfo.textContent = `現在駅: ${stationLabel(progress.currentStation)} / 次駅: ${stationLabel(progress.nextStation)} / 残り${progress.toNext}点`;
+}
+
+function getCurrentTurnContext() {
+  const names = appState.settings.playerNames;
+  if (appState.suddenDeath.active) {
+    const playerIndex = appState.suddenDeath.players[appState.suddenDeath.currentIndex];
+    return {
+      playerIndex,
+      name: names[playerIndex],
+      throwNo: appState.suddenDeath.scores[playerIndex].length + 1,
+      isSuddenDeath: true,
+    };
+  }
+  const playerIndex = appState.currentPlayer;
+  return {
+    playerIndex,
+    name: names[playerIndex],
+    throwNo: appState.scores[playerIndex][appState.currentSet].length + 1,
+    isSuddenDeath: false,
+  };
+}
+
+function coachText(toNext, suddenDeath) {
+  if (suddenDeath) return "集中して1球ずついこう";
+  if (toNext <= 2) return "駅まであと少し！";
+  if (toNext <= 5) return "ナイスペース！";
+  return "リズムよく入力しよう";
+}
+
+function renderRecentThrows() {
+  if (!matchStarted || !appState || appState.finished) {
+    ui.recentThrows.innerHTML = "";
+    return;
+  }
+  const turn = getCurrentTurnContext();
+  const scores = appState.suddenDeath.active
+    ? appState.suddenDeath.scores[turn.playerIndex]
+    : appState.scores[turn.playerIndex][appState.currentSet];
+  const recent = scores.slice(-8).reverse();
+  if (recent.length === 0) {
+    ui.recentThrows.innerHTML = '<span class="throw-pill">まだ入力なし</span>';
+    return;
+  }
+  ui.recentThrows.innerHTML = recent
+    .map((score, idx) => `<span class="throw-pill">${idx + 1}前: ${score}点</span>`)
+    .join("");
 }
 
 function renderTrainBoard() {
@@ -522,6 +567,7 @@ function renderTrainBoard() {
   const players = appState.settings.playerCount;
   const names = appState.settings.playerNames.slice(0, players);
   const totals = getOverallTotals(appState);
+  const currentTurn = appState.finished ? -1 : getCurrentTurnContext().playerIndex;
 
   ui.trainBoard.innerHTML = Array.from({ length: players }, (_, p) => {
     const progress = getTrainProgress(totals[p]);
@@ -535,10 +581,10 @@ function renderTrainBoard() {
     const clear = progress.reachedGoal ? `<span class="clear-badge">${progress.lap}周クリア</span>` : "";
 
     return `
-      <article class="train-card">
+      <article class="train-card ${p === currentTurn ? "current-turn" : ""}">
         <div class="train-head">
           <span>${escapeHtml(names[p])}</span>
-          ${appState.finished ? `<span>総合計: ${totals[p]}点</span>` : ""}
+          ${appState.finished ? `<span>総合計: ${totals[p]}点</span>` : `<span class="train-score-inline">周回 ${progress.lap} / 進行 ${Math.round(progress.lapProgress * 100)}%</span>`}
         </div>
         <div class="rail">
           <div class="rail-line"></div>
@@ -645,6 +691,9 @@ function runScoreEffects(score, beforeTotal, afterTotal) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   showReaction(reactionText(score));
+  if (navigator.vibrate && score >= 8) {
+    navigator.vibrate(score === 10 ? [24, 20, 24] : 18);
+  }
   if (Math.floor(beforeTotal / STATION_STEP) < Math.floor(afterTotal / STATION_STEP)) {
     showToast("えき とうちゃく！", 800);
   }
@@ -666,14 +715,14 @@ function reactionText(score) {
 }
 
 function showReaction(text) {
-  if (effectState.lock) return;
-  effectState.lock = true;
+  if (effectState.reactionBusy) return;
+  effectState.reactionBusy = true;
   clearTimeout(effectState.reactionTimer);
   ui.reaction.textContent = text;
   ui.reaction.classList.add("show");
   effectState.reactionTimer = setTimeout(() => {
     ui.reaction.classList.remove("show");
-    effectState.lock = false;
+    effectState.reactionBusy = false;
   }, 600);
 }
 
@@ -687,7 +736,9 @@ function showToast(text, duration = 800) {
 }
 
 function burstConfetti() {
-  if (effectState.lock) return;
+  if (effectState.confettiBusy) return;
+  effectState.confettiBusy = true;
+  clearTimeout(effectState.confettiTimer);
   const colors = ["#00B280", "#B6007A", "#0088d1", "#ffd447"];
   ui.confettiLayer.innerHTML = "";
   for (let i = 0; i < 22; i += 1) {
@@ -698,8 +749,9 @@ function burstConfetti() {
     chip.style.animationDelay = `${Math.random() * 80}ms`;
     ui.confettiLayer.appendChild(chip);
   }
-  setTimeout(() => {
+  effectState.confettiTimer = setTimeout(() => {
     ui.confettiLayer.innerHTML = "";
+    effectState.confettiBusy = false;
   }, 1000);
 }
 

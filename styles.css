@@ -44,6 +44,19 @@ body {
 .hero {
   background: linear-gradient(135deg, #00b280 0%, #00a87a 60%, #0691a0 100%);
   color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  top: -30px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 h1,
@@ -117,6 +130,12 @@ button {
   font-weight: 700;
   color: #fff;
   background: var(--primary);
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+button:active {
+  transform: translateY(1px) scale(0.99);
+  filter: brightness(0.95);
 }
 
 .small-btn {
@@ -180,6 +199,30 @@ button.danger {
   font-weight: 700;
 }
 
+.hud-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.hud-chip {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #0d5a46;
+  background: rgba(0, 178, 128, 0.18);
+}
+
+.hud-coach {
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #205a4c;
+}
+
 .score-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -206,6 +249,22 @@ button.danger {
   background: #4a5d74;
 }
 
+.recent-throws {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.throw-pill {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #f8fbfa;
+}
+
 .train-header {
   display: flex;
   justify-content: space-between;
@@ -218,6 +277,12 @@ button.danger {
   border-radius: 12px;
   padding: 10px;
   margin-bottom: 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fcfb 100%);
+}
+
+.train-card.current-turn {
+  border-color: rgba(0, 178, 128, 0.5);
+  box-shadow: 0 0 0 2px rgba(0, 178, 128, 0.12);
 }
 
 .train-head {
@@ -274,6 +339,12 @@ button.danger {
 .train-meta {
   margin: 4px 0 0;
   font-size: 14px;
+  font-weight: 700;
+}
+
+.train-score-inline {
+  font-size: 12px;
+  color: var(--subtle);
   font-weight: 700;
 }
 
